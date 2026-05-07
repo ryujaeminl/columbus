@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>콜롬버스 — 다문화 서류 도우미</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;700&family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --paper: #f5f0e8;
+      --red: #c0392b;
+      --gold: #d4a017;
+      --teal: #0a7c6e;
+      --soft: #e8e2d5;
+      --muted: #6b6560;
+      --white: #fdfbf7;
+      --radius: 16px;
+      --shadow: 0 8px 40px rgba(26, 26, 46, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--ink);
+      color: var(--white);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 300;
+      letter-spacing: 0.1em;
+    }
+
+    .header-badge {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--gold);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── API Key Setup ── */
+    #api-setup {
+      max-width: 560px;
+      margin: 60px auto;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 48px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      animation: fadeUp 0.5s ease;
+    }
+
+    #api-setup .setup-emoji {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+
+    #api-setup h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    #api-setup p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .api-input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .api-input-row input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid var(--soft);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Space Mono', monospace;
+      background: var(--paper);
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .api-input-row input:focus {
+      border-color: var(--teal);
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: var(--teal);
+      transform: translateY(-1px);
+    }
+
+    .gemini-note {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .gemini-note a {
+      color: var(--teal);
+    }
+
+    /* ── Main App ── */
+    #main-app {
+      display: none;
+    }
+
+    .app-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    /* Language Selector */
+    .lang-section {
+      margin-bottom: 28px;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .lang-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .lang-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border: 2px solid var(--soft);
+      border-radius: 100px;
+      background: var(--white);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .lang-btn.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--white);
+    }
+
+    .lang-flag {
+      font-size: 18px;
+    }
+
+    /* Tabs */
+    .tab-row {
+      display: flex;
+      gap: 4px;
+      background: var(--soft);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.45s ease;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Panels */
+    .panel {
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* Upload area */
+    .upload-zone {
+      border: 2.5px dashed var(--soft);
+      border-radius: var(--radius);
+      padding: 48px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: var(--teal);
+      background: #f0faf8;
+    }
+
+    .upload-zone input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .upload-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .upload-hint {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .upload-types {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .type-badge {
+      background: var(--soft);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+    }
+
+    /* Text input */
+    .text-input-wrap {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .text-input-header {
+      background: var(--soft);
+      padding: 12px 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      padding: 20px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      line-height: 1.8;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      resize: vertical;
+    }
+
+    /* Action bar */
+    .action-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-translate {
+      background: var(--teal);
+      color: var(--white);
+      flex: 1;
+    }
+
+    .btn-translate:hover {
+      background: #085e52;
+      transform: translateY(-1px);
+    }
+
+    .btn-explain {
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    .btn-explain:hover {
+      background: #b8890e;
+    }
+
+    .btn-compose {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .btn-compose:hover {
+      background: #a02319;
+    }
+
+    .btn-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Result card */
+    .result-card {
+      margin-top: 24px;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .result-header {
+      background: var(--ink);
+      color: var(--white);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .result-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .result-badge {
+      background: var(--teal);
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .btn-copy {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      color: var(--white);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-copy:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .result-body {
+      padding: 24px;
+      font-size: 15px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Compose panel */
+    .compose-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 700px) {
+      .compose-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compose-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .compose-box-header {
+      padding: 12px 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .compose-box-header.native {
+      background: #e8f5f3;
+      color: var(--teal);
+    }
+
+    .compose-box-header.korean {
+      background: #fde8e7;
+      color: var(--red);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+    }
+
+    .spinner.dark {
+      border-color: rgba(26, 26, 46, 0.2);
+      border-top-color: var(--ink);
+    }
+
+    /* Summary blocks */
+    .summary-block {
+      background: var(--paper);
+      border-left: 4px solid var(--teal);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin: 16px 24px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .summary-block .summary-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-error {
+      background: #fde8e7;
+      color: var(--red);
+    }
+
+    .alert-success {
+      background: #e8f5f3;
+      color: var(--teal);
+    }
+
+    /* File preview */
+    .file-preview {
+      background: var(--soft);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .file-preview .file-icon {
+      font-size: 24px;
+    }
+
+    .file-preview .file-name {
+      font-weight: 600;
+    }
+
+    .file-preview .file-size {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .file-preview .btn-remove {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--muted);
+      padding: 4px;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .app-container {
+        padding: 16px;
+      }
+
+      .action-bar {
+        flex-direction: column;
+      }
+
+      .btn-translate {
+        flex: unset;
+      }
+
+      header {
+        padding: 0 16px;
+      }
+
+      .logo-text {
+        font-size: 18px;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🧭</div>
+      <div>
+        <div class="logo-text">콜롬버스</div>
+        <div class="logo-sub">다문화 서류 번역 · 해설 AI</div>
+      </div>
+    </div>
+    <div class="header-badge">Gemini AI</div>
+  </header>
+
+  <div id="api-setup">
+    <div class="setup-emoji">🔑</div>
+    <h2>Gemini API 키 입력</h2>
+    <p>
+      이 서비스는 Google Gemini AI를 사용합니다.<br>
+      API 키는 브라우저에만 저장되며 서버로 전송되지 않습니다.
+    </p>
+    <div class="api-input-row">
+      <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off">
+      <button class="btn-primary" onclick="saveApiKey()">시작하기 →</button>
+    </div>
+    <div class="gemini-note">
+      API 키가 없으신가요? <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>에서 무료로 발급받으세요.
+    </div>
+    <div id="api-error" class="alert alert-error hidden">❌ API 키를 입력해 주세요.</div>
+  </div>
+
+  <div id="main-app">
+    <div class="app-container">
+
+      <div class="lang-section">
+        <div class="lang-label">🌏 내 언어 선택 / Select Your Language</div>
+        <div class="lang-grid" id="lang-grid"></div>
+      </div>
+
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchTab('translate')">
+          📄 서류 번역·해설
+        </button>
+        <button class="tab-btn" onclick="switchTab('compose')">
+          ✍️ 문서 작성 도우미
+        </button>
+      </div>
+
+      <div class="panel active" id="panel-translate">
+
+        <div style="margin-bottom:12px;">
+          <div class="tab-row" style="margin-bottom:16px;">
+            <button class="tab-btn active" onclick="switchInputMode('text')">📝 텍스트 입력</button>
+            <button class="tab-btn" onclick="switchInputMode('upload')">📎 파일 업로드</button>
+          </div>
+        </div>
+
+        <div id="input-text">
+          <div class="text-input-wrap">
+            <div class="text-input-header">번역할 내용을 붙여넣으세요</div>
+            <textarea id="translate-input"
+              placeholder="예) 외국인등록증 갱신 안내문, 건강보험료 납부 안내서, 학교 가정통신문 등 내용을 붙여넣으세요..."></textarea>
+          </div>
+        </div>
+
+        <div id="input-upload" class="hidden">
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" id="file-input" accept=".txt,.pdf,.png,.jpg,.jpeg,.webp" onchange="handleFile(event)">
+            <div class="upload-icon">📂</div>
+            <div class="upload-title">파일을 끌어놓거나 클릭하여 업로드</div>
+            <div class="upload-hint">관공서 서류, 안내문, 공문서 등</div>
+            <div class="upload-types">
+              <span class="type-badge">TXT</span>
+              <span class="type-badge">PDF</span>
+              <span class="type-badge">PNG</span>
+              <span class="type-badge">JPG</span>
+            </div>
+          </div>
+          <div id="file-preview-wrap"></div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-action btn-translate" onclick="doTranslate()">
+            <span>🌐</span> <span id="translate-btn-text">번역 + 쉬운 요약</span>
+          </button>
+          <button class="btn-action btn-explain" onclick="doExplain()">
+            <span>💡</span> <span>핵심 포인트</span>
+          </button>
+        </div>
+
+        <div id="translate-result"></div>
+      </div>
+
+      <div class="panel" id="panel-compose">
+        <div class="compose-grid">
+          <div class="compose-box">
+            <div class="compose-box-header native">
+              <span id="compose-native-flag">🌐</span>
+              <span id="compose-native-label">내 언어로 작성</span>
+            </div>
+            <textarea id="compose-native" placeholder="여기에 내 언어로 작성하고 싶은 내용을 입력하세요..."
+              style="min-height:260px;"></textarea>
+          </div>
+          <div class="compose-box">
+            <div class="compose-box-header korean">
+              🇰🇷 한국어 변환 결과
+            </div>
+            <div id="compose-korean-result"
+              style="padding:20px;min-height:260px;font-size:15px;line-height:1.9;color:var(--muted);">
+              왼쪽에 내용을 입력하고<br>아래 버튼을 누르면<br>한국어로 변환됩니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar" style="margin-top:16px;">
+          <button class="btn-action btn-compose" style="flex:1;" onclick="doCompose()">
+            🇰🇷 한국어로 변환하기
+          </button>
+          <button class="btn-action" style="background:var(--soft);color:var(--ink);" onclick="copyCompose()">
+            📋 복사
+          </button>
+        </div>
+
+        <div
+          style="margin-top:16px; padding:16px; background:var(--white); border-radius:12px; font-size:13px; color:var(--muted); line-height:1.7;">
+          💡 <strong>이런 상황에 활용하세요:</strong> 민원 신청서 작성, 학교 연락장, 의료 상담 메모, 집주인 편지, 직장 요청서 등 — 내 언어로 작성하면 한국어로 깔끔하게 변환해
+          드려요.
+        </div>
+        <div id="compose-result"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ─── Languages ───────────────────────────────────
+    const LANGUAGES = [
+      { code: 'ko', flag: '🇰🇷', name: '한국어', native: '한국어', gemini: 'Korean' },
+      { code: 'en', flag: '🇺🇸', name: 'English', native: 'English', gemini: 'English' },
+      { code: 'zh', flag: '🇨🇳', name: '中文(简)', native: '中文(简体)', gemini: 'Simplified Chinese' },
+      { code: 'zh-tw', flag: '🇹🇼', name: '中文(繁)', native: '中文(繁體)', gemini: 'Traditional Chinese' },
+      { code: 'ja', flag: '🇯🇵', name: '日本語', native: '日本語', gemini: 'Japanese' },
+      { code: 'vi', flag: '🇻🇳', name: 'Tiếng Việt', native: 'Tiếng Việt', gemini: 'Vietnamese' },
+      { code: 'th', flag: '🇹🇭', name: 'ภาษาไทย', native: 'ภาษาไทย', gemini: 'Thai' },
+      { code: 'id', flag: '🇮🇩', name: 'Indonesia', native: 'Bahasa Indonesia', gemini: 'Indonesian' },
+      { code: 'mn', flag: '🇲🇳', name: 'Монгол', native: 'Монгол хэл', gemini: 'Mongolian' },
+      { code: 'ru', flag: '🇷🇺', name: 'Русский', native: 'Русский', gemini: 'Russian' },
+      { code: 'uz', flag: '🇺🇿', name: "O'zbek", native: "O'zbek tili", gemini: 'Uzbek' },
+      { code: 'ne', flag: '🇳🇵', name: 'नेपाली', native: 'नेपाली', gemini: 'Nepali' },
+      { code: 'hi', flag: '🇮🇳', name: 'हिन्दी', native: 'हिन्दी', gemini: 'Hindi' },
+      { code: 'tl', flag: '🇵🇭', name: 'Filipino', native: 'Filipino', gemini: 'Filipino' },
+      { code: 'km', flag: '🇰🇭', name: 'ខ្មែរ', native: 'ភាសាខ្មែរ', gemini: 'Khmer' },
+      { code: 'ar', flag: '🇸🇦', name: 'العربية', native: 'العربية', gemini: 'Arabic' },
+    ];
+
+    let selectedLang = LANGUAGES[0];
+    let apiKey = '';
+    let uploadedFile = null;
+    let uploadedFileData = null;
+    let currentInputMode = 'text';
+
+    // ─── Init ────────────────────────────────────────
+    function init() {
+      renderLangButtons();
+      setupDragDrop();
+    }
+
+    function renderLangButtons() {
+      const grid = document.getElementById('lang-grid');
+      grid.innerHTML = LANGUAGES.map(l => `
+    <button class="lang-btn ${l.code === selectedLang.code ? 'active' : ''}"
+      onclick="selectLang('${l.code}')">
+      <span class="lang-flag">${l.flag}</span>
+      <span>${l.name}</span>
+    </button>
+  `).join('');
+    }
+
+    function selectLang(code) {
+      selectedLang = LANGUAGES.find(l => l.code === code);
+      renderLangButtons();
+      updateComposePlaceholder();
+    }
+
+    function updateComposePlaceholder() {
+      document.getElementById('compose-native-flag').textContent = selectedLang.flag;
+      document.getElementById('compose-native-label').textContent = selectedLang.native + '로 작성';
+      document.getElementById('compose-native').placeholder =
+        `여기에 ${selectedLang.native}로 작성하고 싶은 내용을 입력하세요...`;
+    }
+
+    // ─── API Key ─────────────────────────────────────
+    function saveApiKey() {
+      const val = document.getElementById('api-key-input').value.trim();
+      if (!val) {
+        document.getElementById('api-error').classList.remove('hidden');
+        return;
+      }
+      apiKey = val;
+      document.getElementById('api-setup').style.display = 'none';
+      document.getElementById('main-app').style.display = 'block';
+      updateComposePlaceholder();
+    }
+    document.getElementById('api-key-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveApiKey();
+    });
+
+    // ─── Tabs ────────────────────────────────────────
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-row .tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', (tab === 'translate' && i === 0) || (tab === 'compose' && i === 1));
+      });
+      document.getElementById('panel-translate').classList.toggle('active', tab === 'translate');
+      document.getElementById('panel-compose').classList.toggle('active', tab === 'compose');
+    }
+
+    function switchInputMode(mode) {
+      currentInputMode = mode;
+      document.querySelectorAll('#panel-translate .tab-row .tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', (mode === 'text' && i === 0) || (mode === 'upload' && i === 1));
+      });
+      document.getElementById('input-text').classList.toggle('hidden', mode !== 'text');
+      document.getElementById('input-upload').classList.toggle('hidden', mode !== 'upload');
+    }
+
+    // ─── File Upload ──────────────────────────────────
+    function setupDragDrop() {
+      const zone = document.getElementById('upload-zone');
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        if (e.dataTransfer.files[0]) handleFileObj(e.dataTransfer.files[0]);
+      });
+    }
+
+    function handleFile(e) {
+      if (e.target.files[0]) handleFileObj(e.target.files[0]);
+    }
+
+    function handleFileObj(file) {
+      uploadedFile = file;
+      const ext = file.name.split('.').pop().toLowerCase();
+      const icons = { pdf: '📄', png: '🖼️', jpg: '🖼️', jpeg: '🖼️', webp: '🖼️', txt: '📝' };
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ext === 'txt') {
+          uploadedFileData = { type: 'text', content: ev.target.result };
+        } else {
+          const b64 = ev.target.result.split(',')[1];
+          const mimeMap = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
+          uploadedFileData = { type: 'binary', base64: b64, mimeType: mimeMap[ext] || 'image/jpeg' };
+        }
+      };
+      if (ext === 'txt') reader.readAsText(file);
+      else reader.readAsDataURL(file);
+
+      document.getElementById('file-preview-wrap').innerHTML = `
+    <div class="file-preview">
+      <div class="file-icon">${icons[ext] || '📄'}</div>
+      <div>
+        <div class="file-name">${file.name}</div>
+        <div class="file-size">${(file.size / 1024).toFixed(1)} KB</div>
+      </div>
+      <button class="btn-remove" onclick="removeFile()">✕</button>
+    </div>`;
+    }
+
+    function removeFile() {
+      uploadedFile = null;
+      uploadedFileData = null;
+      document.getElementById('file-preview-wrap').innerHTML = '';
+      document.getElementById('file-input').value = '';
+    }
+
+    // ─── Gemini Call ──────────────────────────────────
+    async function callGemini(prompt, fileData = null) {
+      // 최신 모델인 gemini-2.5-flash로 수정되었습니다!
+      const model = 'gemini-2.5-flash';
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+      let parts = [];
+      if (fileData) {
+        if (fileData.type === 'text') {
+          parts.push({ text: fileData.content });
+        } else {
+          parts.push({ inlineData: { mimeType: fileData.mimeType, data: fileData.base64 } });
+        }
+      }
+      parts.push({ text: prompt });
+
+      const body = {
+        contents: [{ parts }],
+        generationConfig: { temperature: 0.4, maxOutputTokens: 4096 }
+      };
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || '알 수 없는 오류');
+      }
+
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '(결과 없음)';
+    }
+
+    // ─── Translate ────────────────────────────────────
+    async function doTranslate() {
+      const lang = selectedLang;
+      let inputText = '';
+      let fileData = null;
+
+      if (currentInputMode === 'text') {
+        inputText = document.getElementById('translate-input').value.trim();
+        if (!inputText) return showResult('translate-result', '❗ 번역할 내용을 입력해 주세요.', 'error');
+      } else {
+        if (!uploadedFile || !uploadedFileData) return showResult('translate-result', '❗ 파일을 업로드해 주세요.', 'error');
+        fileData = uploadedFileData;
+        inputText = '(첨부된 파일을 참고하세요)';
+      }
+
+      setLoading('translate-result', 'translate-btn-text', '번역 중...', true);
+
+      const prompt = `
+당신은 한국 관공서 서류 전문 번역가입니다.
+아래 서류(또는 첨부 파일)를 ${lang.gemini}로 번역하되, 다음 형식을 꼭 지켜 주세요:
+
+---
+## 📋 핵심 요약 (3줄 이내)
+(한 눈에 이해할 수 있는 핵심 내용을 ${lang.gemini}로 간결하게)
+
+## 📝 전체 번역
+(자연스러운 ${lang.gemini}로 전체 번역. 어려운 행정 용어는 쉽게 풀어쓰기)
+
+## ⚠️ 꼭 확인할 사항
+(기한, 제출 서류, 주의사항 등 놓치면 안 되는 항목을 bullet로 정리)
+
+## ❓ 용어 해설
+(이해하기 어려운 한국 행정 용어 3~5개를 ${lang.gemini}로 쉽게 설명)
+---
+
+${fileData ? '' : '번역할 내용:\n' + inputText}
+`;
+
+      try {
+        const result = await callGemini(prompt, fileData);
+        renderTranslateResult(result, lang);
+      } catch (e) {
+        showResult('translate-result', '❌ 오류: ' + e.message, 'error');
+      }
+    }
+
+    async function doExplain() {
+      const lang = selectedLang;
+      let inputText = '';
+      let fileData = null;
+
+      if (currentInputMode === 'text') {
+        inputText = document.getElementById('translate-input').value.trim();
+        if (!inputText) return showResult('translate-result', '❗ 내용을 입력해 주세요.', 'error');
+      } else {
+        if (!uploadedFile || !uploadedFileData) return showResult('translate-result', '❗ 파일을 업로드해 주세요.', 'error');
+        fileData = uploadedFileData;
+      }
+
+      setLoading('translate-result', 'translate-btn-text', '분석 중...', false);
+
+      const prompt = `
+당신은 한국 생활 전문 도우미입니다.
+아래 서류(또는 파일)를 분석해서 ${lang.gemini}로 다음을 알려 주세요:
+
+## 🎯 이 서류가 무엇인가요?
+(1-2 문장으로 설명)
+
+## 📅 중요한 날짜·기한
+(마감일, 유효기간, 신청 기간 등)
+
+## 📎 필요한 서류나 준비물
+(목록으로 정리)
+
+## 🏢 어디에 가야 하나요?
+(담당 기관, 연락처, 온라인 방법 등)
+
+## 💬 한 마디 요약
+(이 서류를 받은 사람이 당장 해야 할 행동 1가지)
+
+${fileData ? '' : '내용:\n' + inputText}
+`;
+
+      try {
+        const result = await callGemini(prompt, fileData);
+        renderTranslateResult(result, lang);
+      } catch (e) {
+        showResult('translate-result', '❌ 오류: ' + e.message, 'error');
+      }
+    }
+
+    // ─── Compose ──────────────────────────────────────
+    async function doCompose() {
+      const lang = selectedLang;
+      const nativeText = document.getElementById('compose-native').value.trim();
+      if (!nativeText) {
+        document.getElementById('compose-korean-result').textContent = '❗ 내용을 입력해 주세요.';
+        return;
+      }
+
+      const koreanBox = document.getElementById('compose-korean-result');
+      koreanBox.innerHTML = `<span class="spinner dark"></span> 한국어로 변환 중...`;
+
+      const prompt = `
+당신은 한국어 공문서 전문 작성 도우미입니다.
+아래 ${lang.gemini} 내용을 자연스럽고 정중한 한국어로 변환해 주세요.
+
+규칙:
+- 공손하고 격식 있는 한국어 사용
+- 관공서나 공식 문서에 적합한 표현
+- 자연스럽게 번역 (직역 금지)
+- 필요하면 한국 관습에 맞게 내용 조정
+- 번역 결과만 출력 (설명 없이)
+
+${lang.gemini} 원문:
+${nativeText}
+`;
+
+      try {
+        const result = await callGemini(prompt);
+        koreanBox.style.color = 'var(--ink)';
+        koreanBox.style.whiteSpace = 'pre-wrap';
+        koreanBox.textContent = result;
+      } catch (e) {
+        koreanBox.textContent = '❌ 오류: ' + e.message;
+      }
+    }
+
+    function copyCompose() {
+      const text = document.getElementById('compose-korean-result').textContent;
+      if (!text || text.includes('입력하고')) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('#panel-compose .action-bar button:last-child');
+        btn.textContent = '✅ 복사됨!';
+        setTimeout(() => btn.textContent = '📋 복사', 1800);
+      });
+    }
+
+    // ─── Helpers ──────────────────────────────────────
+    function renderTranslateResult(text, lang) {
+      const wrap = document.getElementById('translate-result');
+      wrap.innerHTML = `
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-header-left">
+          <span>${lang.flag}</span>
+          <span>${lang.native} 번역 결과</span>
+          <span class="result-badge">Gemini AI</span>
+        </div>
+        <button class="btn-copy" onclick="copyResult(this)">📋 복사</button>
+      </div>
+      <div class="result-body">${escapeHtml(text)}</div>
+    </div>`;
+    }
+
+    function copyResult(btn) {
+      const text = btn.closest('.result-card').querySelector('.result-body').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✅ 복사됨!';
+        setTimeout(() => btn.textContent = '📋 복사', 1800);
+      });
+    }
+
+    function showResult(id, msg, type) {
+      document.getElementById(id).innerHTML =
+        `<div class="alert alert-${type === 'error' ? 'error' : 'success'}">${msg}</div>`;
+    }
+
+    function setLoading(resultId, btnId, msg, isTranslate) {
+      document.getElementById(resultId).innerHTML = `
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-header-left"><span class="spinner"></span> ${msg}</div>
+      </div>
+      <div class="result-body" style="color:var(--muted);">AI가 분석 중입니다. 잠시 기다려 주세요...</div>
+    </div>`;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    init();
+  </script>
+</body>
+
+</html>
